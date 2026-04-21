@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<link rel="stylesheet" href="/css/style.css">
+<title>Finança</title>
+
+</head>
+<body>
+
+<div id="screen-home" class="screen active">
+  <div class="header">
+    <h1>Finança 💰</h1>
+    <p id="home-month"></p>
+  </div>
+
+  <div class="balance-card">
+    <div class="label">Saldo total</div>
+    <div class="amount" id="balance-val">R$ 0,00</div>
+    <div class="sub" id="balance-sub">0 transações registradas</div>
+  </div>
+
+  <div class="mini-cards">
+    <div class="mini-card income">
+      <div class="label">↑ Receitas</div>
+      <div class="amount" id="income-val">R$ 0,00</div>
+    </div>
+    <div class="mini-card expense">
+      <div class="label">↓ Despesas</div>
+      <div class="amount" id="expense-val">R$ 0,00</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="chart-card">
+      <div class="chart-title">Últimos 6 meses</div>
+      <div class="bar-wrap" id="bar-chart"></div>
+      <div class="bar-labels" id="bar-labels"></div>
+      <div class="chart-legend">
+        <span class="legend"><span class="dot" style="background:#22c55e"></span>Receitas</span>
+        <span class="legend"><span class="dot" style="background:#ef4444"></span>Despesas</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Recentes</div>
+    <div class="tx-list" id="home-tx-list">
+      <div class="empty"><div class="icon">🌱</div><p>Nenhuma transação ainda.</p></div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-transactions" class="screen">
+  <div class="header">
+    <h1>Lançamentos</h1>
+    <p>Histórico completo</p>
+  </div>
+  <div class="section" style="margin-top:16px">
+    <div class="filters" id="tx-filters">
+      <button class="filter-btn active" onclick="setFilter('all',this)">Todas</button>
+      <button class="filter-btn" onclick="setFilter('income',this)">Receitas</button>
+      <button class="filter-btn" onclick="setFilter('expense',this)">Despesas</button>
+    </div>
+    <div class="tx-list" id="all-tx-list">
+      <div class="empty"><div class="icon">🌱</div><p>Nenhuma transação ainda.</p></div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-goals" class="screen">
+  <div class="header" style="display:flex;justify-content:space-between;align-items:flex-end">
+    <div><h1>Metas 🎯</h1><p>Seus objetivos financeiros</p></div>
+    <button class="btn-sm" onclick="openGoalModal()" style="margin-bottom:0;height:34px">+ Nova</button>
+  </div>
+  <div class="section" style="margin-top:16px" id="goals-list">
+    <div class="empty"><div class="icon">🎯</div><p>Nenhuma meta ainda.</p></div>
+  </div>
+</div>
+
+<div id="screen-chat" class="screen" style="padding-bottom:0">
+  <div class="chat-wrap">
+    <div class="chat-header">
+      <h1>Chat IA ✦</h1>
+    </div>
+
+    <div class="chat-status-bar">
+      <div class="status-dot" id="status-dot"></div>
+      <div>
+        <div class="status-text" id="status-text">Configure a API Key em Configurações</div>
+        <div class="status-sub">Gemini 1.5 Flash · Assistente Financeiro</div>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="chat-messages">
+      <div class="msg ai">
+        <div class="bubble">
+          👋 Olá! Sou seu assistente financeiro.<br><br>
+          Posso te ajudar a <strong>adicionar transações</strong>, <strong>analisar gastos</strong> ou tirar dúvidas sobre finanças.<br><br>
+          Configure sua chave Gemini em <strong>Configurações</strong> para começar.
+        </div>
+        <div class="msg-time">Agora</div>
+      </div>
+    </div>
+
+    <div class="chat-suggestions">
+      <button class="sugg" onclick="setSugg(this.textContent)">📊 Meu saldo</button>
+      <button class="sugg" onclick="setSugg(this.textContent)">➕ Adicionar receita R$500</button>
+      <button class="sugg" onclick="setSugg(this.textContent)">📉 Maiores gastos</button>
+      <button class="sugg" onclick="setSugg(this.textContent)">💡 Dicas de economia</button>
+    </div>
+
+    <div class="chat-input-row">
+      <textarea class="chat-input" id="chat-input" placeholder="Pergunte sobre suas finanças..." onkeydown="chatKey(event)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+</div>
+
+<div id="screen-settings" class="screen">
+  <div class="header">
+    <h1>Configurações</h1>
+    <p>Preferências do app</p>
+  </div>
+
+  <div style="margin-top:16px">
+    <div class="settings-block">
+      <div class="settings-block-title">✦ Gemini API</div>
+      <div style="padding:16px">
+        <div class="form-group">
+          <label class="form-label">Chave API</label>
+          <div class="key-wrap">
+            <input type="password" class="form-input" id="api-key-input" placeholder="AIza..."/>
+            <button class="key-toggle" onclick="toggleKey()" id="key-toggle-btn">👁</button>
+          </div>
+          <div style="font-size:11px;color:#aaa;margin-top:5px">Obtenha em aistudio.google.com/app/apikey</div>
+        </div>
+        <button class="btn-sm" onclick="saveKey()" style="height:38px;width:100%;border-radius:10px">Salvar Chave</button>
+      </div>
+    </div>
+
+    <div class="settings-block">
+      <div class="settings-block-title">ℹ️ Informações</div>
+      <div class="settings-row">
+        <div><div class="settings-lbl">Versão</div></div>
+        <span style="font-size:13px;color:#aaa">1.0.0</span>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-lbl">Modelo IA</div></div>
+        <span style="font-size:13px;color:#aaa">Gemini 1.5 Flash</span>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-lbl">Armazenamento</div><div class="settings-sub">Dados salvos localmente</div></div>
+        <span class="badge income">Local</span>
+      </div>
+    </div>
+
+    <div class="settings-block">
+      <div class="settings-block-title">⚠️ Dados</div>
+      <div style="padding:16px">
+        <div style="font-size:12px;color:#aaa;margin-bottom:12px">Remove permanentemente todas as transações e metas.</div>
+        <button class="btn-ghost btn-danger" onclick="clearAll()">🗑 Limpar todos os dados</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="fab" id="fab" onclick="openTxModal()">+</button>
+
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="goTo('home',this)">
+    <span class="nav-icon">🏠</span><span class="nav-label">Início</span>
+  </button>
+  <button class="nav-item" onclick="goTo('transactions',this)">
+    <span class="nav-icon">↕️</span><span class="nav-label">Lançamentos</span>
+  </button>
+  <button class="nav-item" onclick="goTo('goals',this)">
+    <span class="nav-icon">🎯</span><span class="nav-label">Metas</span>
+  </button>
+  <button class="nav-item" onclick="goTo('chat',this)">
+    <span class="nav-icon">✦</span><span class="nav-label">Chat IA</span>
+  </button>
+  <button class="nav-item" onclick="goTo('settings',this)">
+    <span class="nav-icon">⚙️</span><span class="nav-label">Config.</span>
+  </button>
+</nav>
+
+<div class="overlay" id="tx-modal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2>Nova Transação</h2>
+    <p class="sub">Registre uma movimentação</p>
+
+    <div class="form-group">
+      <label class="form-label">Tipo</label>
+      <div class="type-row">
+        <button class="type-btn income active" id="btn-income" onclick="setType('income')">↑ Receita</button>
+        <button class="type-btn expense" id="btn-expense" onclick="setType('expense')">↓ Despesa</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Descrição</label>
+      <input class="form-input" id="tx-desc" placeholder="Ex: Salário, Aluguel..."/>
+    </div>
+
+    <div class="form-row form-group">
+      <div>
+        <label class="form-label">Valor (R$)</label>
+        <input class="form-input" id="tx-amount" type="number" min="0" step="0.01" placeholder="0,00"/>
+      </div>
+      <div>
+        <label class="form-label">Data</label>
+        <input class="form-input" id="tx-date" type="date"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Categoria</label>
+      <select class="form-input" id="tx-cat">
+        <option>Salário</option><option>Freelance</option><option>Investimentos</option>
+        <option>Alimentação</option><option>Moradia</option><option>Transporte</option>
+        <option>Saúde</option><option>Lazer</option><option>Educação</option><option>Outros</option>
+      </select>
+    </div>
+
+    <button class="btn-primary" onclick="addTx()">Adicionar</button>
+    <button class="btn-ghost" onclick="closeTxModal()">Cancelar</button>
+  </div>
+</div>
+
+<div class="overlay" id="goal-modal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2>Nova Meta</h2>
+    <p class="sub">Defina um objetivo financeiro</p>
+
+    <div class="form-group">
+      <label class="form-label">Nome</label>
+      <input class="form-input" id="goal-name" placeholder="Ex: Viagem, Carro..."/>
+    </div>
+
+    <div class="form-row form-group">
+      <div>
+        <label class="form-label">Valor Alvo</label>
+        <input class="form-input" id="goal-target" type="number" min="0" step="0.01" placeholder="R$ 0,00"/>
+      </div>
+      <div>
+        <label class="form-label">Já Tenho</label>
+        <input class="form-input" id="goal-current" type="number" min="0" step="0.01" placeholder="R$ 0,00"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Emoji</label>
+      <input class="form-input" id="goal-emoji" placeholder="🎯" maxlength="2" style="width:72px"/>
+    </div>
+
+    <button class="btn-primary" onclick="addGoal()">Criar Meta</button>
+    <button class="btn-ghost" onclick="closeGoalModal()">Cancelar</button>
+  </div>
+</div>
+</body>
+<script src="js/app.js"></script>
+</html>
